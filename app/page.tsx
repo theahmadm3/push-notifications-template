@@ -22,22 +22,22 @@ export default function Home() {
             </h2>
             <ol className="list-decimal list-inside space-y-2 text-gray-700 dark:text-gray-300">
               <li>Configure your Supabase project and add the credentials to .env</li>
-              <li>Create a table named &quot;push_subscriptions&quot; in Supabase with columns: id, endpoint, p256dh, auth, created_at</li>
-              <li>Enable push notifications in your browser</li>
-              <li>Click &quot;Send Test Notification&quot; to test the functionality</li>
+              <li>Create a table named &quot;push_subscriptions&quot; in Supabase using the schema from supabase-schema.sql</li>
+              <li>Select your user type (user-type-1 or user-type-2) and enable push notifications</li>
+              <li>Open another browser/device, select the other user type, and enable notifications there too</li>
+              <li>Test the bidirectional notifications by clicking the action buttons</li>
             </ol>
           </div>
 
           <div className="mt-8 p-6 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
             <h3 className="text-lg font-semibold text-blue-900 dark:text-blue-100 mb-2">
-              Features
+              How It Works
             </h3>
             <ul className="list-disc list-inside space-y-1 text-blue-800 dark:text-blue-200">
-              <li>Progressive Web App (PWA) with offline support</li>
-              <li>Web Push notifications using web-push</li>
-              <li>Subscription management with Supabase</li>
-              <li>Service Worker for background notifications</li>
-              <li>Modern Next.js App Router architecture</li>
+              <li><strong>User Type 1</strong>: Clicks &quot;Send Test Notification&quot; → Notifies all User Type 2 users</li>
+              <li><strong>User Type 2</strong>: Clicks &quot;Received Test Notification&quot; → Notifies all User Type 1 users</li>
+              <li>Each user type can trigger notifications to the other user type</li>
+              <li>Supports multiple users per type for scalability</li>
             </ul>
           </div>
         </div>

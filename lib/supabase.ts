@@ -10,5 +10,6 @@ export type PushSubscription = {
   endpoint: string;
   p256dh: string;
   auth: string;
+  user_type: 'user-type-1' | 'user-type-2';
   created_at?: string;
 };
