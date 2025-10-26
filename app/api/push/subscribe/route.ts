@@ -3,7 +3,16 @@ import { supabase } from '@/lib/supabase';
 
 export async function POST(request: NextRequest) {
   try {
-    const subscription = await request.json();
+    const body = await request.json();
+    const subscription = body.subscription;
+    const userType = body.userType;
+
+    if (!userType || !['user-type-1', 'user-type-2'].includes(userType)) {
+      return NextResponse.json(
+        { error: 'Invalid or missing user type' },
+        { status: 400 }
+      );
+    }
 
     // Extract keys from subscription
     const endpoint = subscription.endpoint;
@@ -18,6 +27,7 @@ export async function POST(request: NextRequest) {
           endpoint,
           p256dh,
           auth,
+          user_type: userType,
         },
         {
           onConflict: 'endpoint',

@@ -11,12 +11,20 @@ webpush.setVapidDetails(vapidSubject, vapidPublicKey, vapidPrivateKey);
 
 export async function POST(request: NextRequest) {
   try {
-    const { title, body, icon } = await request.json();
+    const { title, body, icon, targetUserType } = await request.json();
 
-    // Get all subscriptions from Supabase
+    if (!targetUserType || !['user-type-1', 'user-type-2'].includes(targetUserType)) {
+      return NextResponse.json(
+        { error: 'Invalid or missing target user type' },
+        { status: 400 }
+      );
+    }
+
+    // Get subscriptions for the target user type from Supabase
     const { data: subscriptions, error } = await supabase
       .from('push_subscriptions')
-      .select('*');
+      .select('*')
+      .eq('user_type', targetUserType);
 
     if (error) {
       console.error('Error fetching subscriptions:', error);
@@ -28,7 +36,7 @@ export async function POST(request: NextRequest) {
 
     if (!subscriptions || subscriptions.length === 0) {
       return NextResponse.json(
-        { message: 'No subscriptions found' },
+        { message: 'No subscriptions found for target user type' },
         { status: 200 }
       );
     }

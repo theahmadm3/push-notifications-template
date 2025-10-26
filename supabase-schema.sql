@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS push_subscriptions (
   endpoint TEXT UNIQUE NOT NULL,
   p256dh TEXT NOT NULL,
   auth TEXT NOT NULL,
+  user_type TEXT NOT NULL CHECK (user_type IN ('user-type-1', 'user-type-2')),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
