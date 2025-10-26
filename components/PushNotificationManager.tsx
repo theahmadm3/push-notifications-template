@@ -96,6 +96,11 @@ export default function PushNotificationManager() {
 
   async function sendNotificationToOtherUser() {
     try {
+      if (!subscribedUserType) {
+        setMessage('Please subscribe first.');
+        return;
+      }
+
       // Determine the target user type based on current user type
       const targetUserType: UserType = subscribedUserType === 'user-type-1' ? 'user-type-2' : 'user-type-1';
       const actionType = subscribedUserType === 'user-type-1' ? 'send test notification' : 'received test notification';
