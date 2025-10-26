@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { backend } from '@/lib/backend';
 
 export async function POST(request: NextRequest) {
   try {
@@ -19,29 +19,13 @@ export async function POST(request: NextRequest) {
     const p256dh = subscription.keys.p256dh;
     const auth = subscription.keys.auth;
 
-    // Store subscription in Supabase
-    const { data, error } = await supabase
-      .from('push_subscriptions')
-      .upsert(
-        {
-          endpoint,
-          p256dh,
-          auth,
-          user_type: userType,
-        },
-        {
-          onConflict: 'endpoint',
-        }
-      )
-      .select();
-
-    if (error) {
-      console.error('Error storing subscription:', error);
-      return NextResponse.json(
-        { error: 'Failed to store subscription' },
-        { status: 500 }
-      );
-    }
+    // Store subscription in Django backend
+    const data = await backend.subscribe({
+      endpoint,
+      p256dh,
+      auth,
+      user_type: userType,
+    });
 
     return NextResponse.json({ success: true, data });
   } catch (error) {
@@ -57,19 +41,8 @@ export async function DELETE(request: NextRequest) {
   try {
     const { endpoint } = await request.json();
 
-    // Remove subscription from Supabase
-    const { error } = await supabase
-      .from('push_subscriptions')
-      .delete()
-      .eq('endpoint', endpoint);
-
-    if (error) {
-      console.error('Error removing subscription:', error);
-      return NextResponse.json(
-        { error: 'Failed to remove subscription' },
-        { status: 500 }
-      );
-    }
+    // Remove subscription from Django backend
+    await backend.unsubscribe(endpoint);
 
     return NextResponse.json({ success: true });
   } catch (error) {

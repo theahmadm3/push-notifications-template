@@ -2,19 +2,18 @@
 
 ## What Was Created
 
-A complete Next.js Progressive Web App (PWA) template with push notifications functionality using web-push and Supabase.
+A complete Next.js Progressive Web App (PWA) template with push notifications functionality using Django backend.
 
 ## Key Files
 
 ### Environment Configuration
-- **`.env`** - Contains pre-generated VAPID keys and placeholder Supabase configuration
+- **`.env`** - Contains pre-generated VAPID keys and Django backend configuration
   - ⚠️ **IMPORTANT**: Delete this file after cloning and create `.env.local` with your actual credentials
 - **`.env.example`** - Template showing required environment variables
 
 ### Documentation
 - **`README.md`** - Comprehensive documentation with features, setup, API endpoints, and deployment instructions
 - **`SETUP.md`** - Quick start guide with step-by-step instructions
-- **`supabase-schema.sql`** - SQL schema for creating the database table
 
 ### Application Code
 
@@ -31,10 +30,10 @@ A complete Next.js Progressive Web App (PWA) template with push notifications fu
 
 #### API Routes
 - **`app/api/push/subscribe/route.ts`** - Handles subscription and unsubscription
-  - POST: Subscribe to push notifications
-  - DELETE: Unsubscribe from push notifications
-- **`app/api/push/send/route.ts`** - Sends push notifications to all subscribers
-  - POST: Send notification with title, body, and icon
+  - POST: Subscribe to push notifications (forwards to Django backend)
+  - DELETE: Unsubscribe from push notifications (forwards to Django backend)
+- **`app/api/push/send/route.ts`** - Sends push notifications via Django backend
+  - POST: Send notification with title, body, icon, and targetUserType
 
 #### Components
 - **`components/PushNotificationManager.tsx`** - React component for managing push notifications
@@ -43,7 +42,7 @@ A complete Next.js Progressive Web App (PWA) template with push notifications fu
   - Display subscription status
 
 #### Libraries
-- **`lib/supabase.ts`** - Supabase client configuration and types
+- **`lib/backend.ts`** - Django backend client configuration
 
 #### PWA Files
 - **`public/manifest.json`** - PWA manifest
@@ -60,12 +59,12 @@ When the app loads, it registers a service worker (`sw.js`) that listens for pus
 1. User clicks "Enable Push Notifications"
 2. Browser prompts for permission
 3. If granted, browser creates a push subscription
-4. Subscription is sent to `/api/push/subscribe` and stored in Supabase
+4. Subscription is sent to `/api/push/subscribe` which forwards it to the Django backend at `/subscribe`
 
 ### 3. Sending Notifications
 1. Call `/api/push/send` with notification payload
-2. API retrieves all subscriptions from Supabase
-3. Uses web-push to send notifications to each subscription
+2. API forwards request to Django backend at `/notify`
+3. Django backend retrieves subscriptions and sends notifications using web-push
 4. Service worker receives push event and displays notification
 
 ### 4. Notification Click
@@ -76,13 +75,8 @@ When user clicks a notification, the service worker focuses the app window or op
 ### NEXT_PUBLIC_APP_URL
 - Your app's URL (e.g., `http://localhost:3000` for development)
 
-### NEXT_PUBLIC_SUPABASE_URL
-- Your Supabase project URL
-- Find it in: Supabase Dashboard → Settings → API
-
-### NEXT_PUBLIC_SUPABASE_ANON_KEY
-- Your Supabase anonymous/public API key
-- Find it in: Supabase Dashboard → Settings → API
+### NEXT_PUBLIC_BACKEND_URL
+- Your Django backend URL (default: `https://fastapi-backend-nt2a.onrender.com`)
 
 ### NEXT_PUBLIC_VAPID_PUBLIC_KEY
 - Public key for VAPID (already generated)
@@ -104,10 +98,9 @@ When user clicks a notification, the service worker focuses the app window or op
    npm install
    ```
 
-2. **Set up Supabase**
-   - Create a Supabase project
-   - Run the SQL from `supabase-schema.sql`
-   - Update `.env` with your credentials
+2. **Configure backend**
+   - Ensure the Django backend is running at `https://fastapi-backend-nt2a.onrender.com`
+   - Or update `.env` with your backend URL
 
 3. **Run development server**
    ```bash
@@ -125,6 +118,7 @@ When user clicks a notification, the service worker focuses the app window or op
 - HTTPS is required (push notifications don't work on HTTP)
 - Set all environment variables in your hosting platform
 - Ensure service worker is accessible at `/sw.js`
+- Django backend must be accessible and running
 
 ### Recommended Platforms
 - Vercel (easiest, configured automatically)
@@ -135,7 +129,7 @@ When user clicks a notification, the service worker focuses the app window or op
 
 1. **Delete `.env` file**: After cloning, delete `.env` and create `.env.local` with your actual credentials
 2. **Keep VAPID_PRIVATE_KEY secret**: Never expose this in client-side code
-3. **Update Supabase RLS**: The schema includes a permissive policy - restrict this in production
+3. **Secure backend**: Ensure the Django backend implements proper authentication and authorization
 4. **Use HTTPS**: Required for service workers and push notifications in production
 
 ## Browser Support
@@ -154,8 +148,9 @@ Works in:
 
 ### Notifications not received
 - Verify browser permissions
-- Check Supabase credentials
+- Check Django backend is running and accessible
 - Ensure service worker is registered (check DevTools → Application → Service Workers)
+- Check network requests in browser DevTools
 
 ### Build errors
 - Ensure all environment variables are set
@@ -165,12 +160,12 @@ Works in:
 
 1. Clone the repository
 2. Delete `.env` and create `.env.local`
-3. Set up your Supabase project
+3. Configure your Django backend URL if different
 4. Add your credentials to `.env.local`
 5. Test locally
 6. Deploy to production (Vercel recommended)
 
 ---
 
-**Built with**: Next.js 16, React 19, TypeScript, Tailwind CSS, web-push, Supabase
+**Built with**: Next.js 16, React 19, TypeScript, Tailwind CSS, Django Backend
 **License**: MIT

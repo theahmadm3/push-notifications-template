@@ -2,7 +2,7 @@
 
 ## Prerequisites
 - Node.js 18 or higher
-- A Supabase account (free tier works fine)
+- A Django backend (default: https://fastapi-backend-nt2a.onrender.com)
 
 ## Quick Start
 
@@ -11,50 +11,27 @@
 npm install
 ```
 
-### 2. Configure Supabase
+### 2. Configure Django Backend
 
-#### Create Supabase Project
-1. Go to https://supabase.com
-2. Create a new project
-3. Wait for the project to be ready
+The application is configured to use a Django backend at `https://fastapi-backend-nt2a.onrender.com` by default.
 
-#### Create Database Table
-In your Supabase project's SQL Editor, run:
-```sql
-CREATE TABLE IF NOT EXISTS push_subscriptions (
-  id BIGSERIAL PRIMARY KEY,
-  endpoint TEXT UNIQUE NOT NULL,
-  p256dh TEXT NOT NULL,
-  auth TEXT NOT NULL,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
+The backend should provide these endpoints:
+- `POST /subscribe` - Store push subscriptions
+- `DELETE /subscribe` - Remove push subscriptions
+- `POST /notify` - Send push notifications to users
 
-CREATE INDEX IF NOT EXISTS idx_push_subscriptions_endpoint ON push_subscriptions(endpoint);
+If you want to use a different backend, you can configure it in your environment variables.
 
-ALTER TABLE push_subscriptions ENABLE ROW LEVEL SECURITY;
+### 3. Update Environment Variables
 
-CREATE POLICY "Allow all operations on push_subscriptions" ON push_subscriptions
-  FOR ALL
-  USING (true)
-  WITH CHECK (true);
-```
-
-### 3. Get Supabase Credentials
-1. Go to Project Settings > API
-2. Copy your Project URL
-3. Copy your `anon` `public` API key
-
-### 4. Update Environment Variables
-
-The `.env` file already contains generated VAPID keys. Update it with your Supabase credentials:
+The `.env` file already contains generated VAPID keys. Update it with your backend URL if needed:
 
 ```env
 # Next.js
 NEXT_PUBLIC_APP_URL=http://localhost:3000
 
-# Supabase - UPDATE THESE
-NEXT_PUBLIC_SUPABASE_URL=your_actual_supabase_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_actual_supabase_anon_key
+# Django Backend
+NEXT_PUBLIC_BACKEND_URL=https://fastapi-backend-nt2a.onrender.com
 
 # Web Push VAPID Keys - Already generated, keep as is
 NEXT_PUBLIC_VAPID_PUBLIC_KEY=BDl06ib5uIKGb6e1aTUqmBoO8MChg_jdBkXIVKK5Qio4xGrEH3Rz9gbtIiLHsu6c5Wr-NIhoD4UepYja_u67V3Q
@@ -62,14 +39,14 @@ VAPID_PRIVATE_KEY=GPLArNxujqICAJNS1IeBd7TCoPfH0C55pPGvtYjDPYs
 VAPID_SUBJECT=mailto:your-email@example.com
 ```
 
-### 5. Run the Development Server
+### 4. Run the Development Server
 ```bash
 npm run dev
 ```
 
 Open http://localhost:3000 in your browser.
 
-### 6. Test Push Notifications
+### 5. Test Push Notifications
 1. Click "Enable Push Notifications"
 2. Allow notifications when prompted
 3. Click "Send Test Notification"
@@ -87,8 +64,8 @@ Open http://localhost:3000 in your browser.
 ### Notifications not working?
 - Check browser console for errors
 - Ensure you've allowed notifications in browser settings
-- Verify Supabase credentials are correct
-- Make sure the `push_subscriptions` table exists
+- Verify the Django backend is running and accessible
+- Make sure the backend endpoints are working correctly
 
 ### Build errors?
 - Check that all environment variables are set
