@@ -1,9 +1,7 @@
-/// <reference lib="webworker" />
-
-declare const self: ServiceWorkerGlobalScope;
+// Service Worker for Push Notifications
 
 // Listen for push events
-self.addEventListener('push', (event: PushEvent) => {
+self.addEventListener('push', (event) => {
   if (!event.data) {
     return;
   }
@@ -25,7 +23,7 @@ self.addEventListener('push', (event: PushEvent) => {
 });
 
 // Listen for notification clicks
-self.addEventListener('notificationclick', (event: NotificationEvent) => {
+self.addEventListener('notificationclick', (event) => {
   event.notification.close();
 
   event.waitUntil(
@@ -43,5 +41,3 @@ self.addEventListener('notificationclick', (event: NotificationEvent) => {
     })
   );
 });
-
-export {};
